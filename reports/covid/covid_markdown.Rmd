@@ -1,0 +1,160 @@
+---
+title: "Analysis and Visualizations of COVID-19 Data: Insights into Cases, Deaths, and Mortality Rates in the United States"
+output: html_document
+date: "2023-05-31"
+by: Brian Pedigo
+
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+covid_data <- read.csv("COVID-19.csv")
+covid_data2 <- read.csv(("States_COVID-19_2.csv"))
+library(scales)
+library(knitr)
+library(knitr)
+library(ggplot2)
+library(dplyr)
+library(assertive, warn.conflicts = FALSE)
+message=FALSE
+
+```
+
+
+# Introduction
+This report examines the COVID-19 data obtained from data.gov, specifically focusing on the "United States COVID-19 Cases and Deaths by State over Time" dataset, which can be accessed at the following URL: https://catalog.data.gov/dataset/united-states-covid-19-cases-and-deaths-by-state-over-time.
+
+The dataset provided by the CDC offers a comprehensive overview of COVID-19 cases and deaths across various states and territories in the United States. The accuracy of the data depends on reporting from individual jurisdictions. Counting exact numbers of COVID-19 cases poses challenges due to several factors, including the presence of mild symptoms, delays in reporting and testing, incomplete testing, and differences in reporting completeness among states and territories. The CDC utilizes this dataset to track trends, identify outbreaks, and assess the effectiveness of public health measures. Notably, the dataset includes both confirmed and probable cases and deaths, although the availability of probable data varies across jurisdictions. It is essential to recognize that the data provided is provisional and subject to change as additional information becomes available and is verified.
+
+## Research Questions
+This report utilizes the aforementioned dataset to address the following research questions: 
+
+1. What were the total COVID-19 deaths by state?
+2. Which five states experienced the highest number of COVID-19 deaths?
+3. How many new COVID-19 cases were being reported, and when did a significant spike occur?
+4. Additionally, the report examines the comparison between the total reported cases of COVID-19 and the total number of deaths, thereby providing insights into the mortality rate associated with the disease.
+
+## New Cases over Time
+
+To analyze the trajectory of new COVID-19 cases, a chart representing the number of new cases over time is provided below. The x-axis denotes the dates, while the y-axis indicates the number of new cases reported. The line color on the chart signifies the magnitude of new cases, with blue denoting lower values and red representing higher values. Notably, the chart clearly demonstrates a substantial spike in reported new cases from December 2021 until March 2022.
+
+
+```{r echo=FALSE}
+# Convert submission_date to date format with appropriate format specification
+covid_data$submission_date <- as.Date(covid_data$submission_date, format = "%m/%d/%Y")
+
+# Create the line plot with modified legend labels
+ggplot(data = covid_data, aes(x = submission_date, y = new_case, color = new_case)) +
+  geom_line() +
+  xlab("dates") +
+  ylab("cases") +
+  ggtitle("New Cases from 2020-2022") +
+  scale_y_continuous(labels = comma) +
+  scale_x_date(date_labels = "%m/%Y", date_breaks = "3 months") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  scale_color_gradient(low = "blue", high = "red", labels = comma)
+```
+
+The spike in new cases during this period emphasizes the significant impact of COVID-19 on the population, and underscores the need for effective measures to mitigate the spread of the virus. It is crucial to analyze the factors contributing to this spike and investigate potential reasons behind the rapid increase in cases during this specific time frame. This information can inform public health strategies and interventions to prevent similar surges in the future.
+
+
+## The State Hit the Hardest by COVID-19
+
+
+To assess the impact of COVID-19 on different states, the following table presents the states that experienced the highest number of deaths caused by the virus. It is evident from the data that California bore the brunt of the pandemic, being the state with the highest number of COVID-19 deaths. Texas and Florida also faced significant losses due to the virus.
+
+
+```{r echo=FALSE}
+
+
+# Calculate the top 5 states with the highest death totals
+top_states <- covid_data %>%
+  group_by(state) %>%
+  summarise(total_deaths = sum(tot_death)) %>%
+  arrange(desc(total_deaths)) %>%
+  top_n(5)
+
+# Display the top states table
+kable(top_states, caption = "Top 5 States with Highest Death Totals")  
+
+```
+
+The table underscores the severe toll that COVID-19 has taken on these states, highlighting the need for robust public health measures and proactive interventions to mitigate the impact of the pandemic. It is crucial to analyze the factors contributing to the high death toll in these states and identify effective strategies to protect public health and save lives.
+
+
+## The Death Totals Across All States
+
+
+To provide a more detailed perspective on the impact of COVID-19 across states, the following bar graph illustrates the total number of deaths by state. Each bar on the graph corresponds to a specific state, with the height of the bar indicating the total number of deaths recorded in that particular state. The color gradient, ranging from blue to red, represents an increasing number of deaths.
+
+
+```{r echo=FALSE}
+
+
+ggplot(data = covid_data, aes(x = state, y = tot_death, fill = tot_death)) +
+  geom_bar(stat = "identity") +
+  xlab("States") +
+  ylab("Deaths") +
+  ggtitle("Total Deaths by State") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  scale_y_continuous(labels = scales::comma) +
+  scale_fill_gradient(low = "blue", high = "red") +
+  labs(fill = "Deaths")
+
+
+
+
+
+```
+
+This visualization offers a nuanced view of the COVID-19 death toll per state, allowing for a better understanding of the varying severity experienced across the country. The graph highlights the states with the highest death counts, indicating the significant impact of the pandemic on their populations. Analyzing these patterns can aid in identifying areas that require increased attention and resources to mitigate the devastating consequences of COVID-19.
+
+
+## The Mortality Rate
+
+
+To assess the mortality rate associated with COVID-19, the following bar chart provides an overview of the total number of reported COVID-19 cases (represented by the blue bars) and the total number of deaths (represented by the red bars). By calculating the ratio of total cases to total deaths, we can determine the mortality rate
+
+
+```{r echo=FALSE}
+mortality_rate <- (sum(covid_data$tot_death) / sum(covid_data$tot_cases)) * 100
+
+# Create a data frame for the bar chart
+bar_data <- data.frame(
+  Category = c("Total Cases", "Total Deaths"),
+  Count = c(sum(covid_data$tot_cases), sum(covid_data$tot_death)),
+  Color = c("blue", "red")
+)
+
+# Plotting the bar chart
+ggplot(bar_data, aes(x = Category, y = Count, fill = Color)) +
+  geom_bar(stat = "identity", width = 0.8) +
+  geom_text(aes(label = Count), vjust = -0.5, size = 4) +
+  labs(title = "Total Cases vs Total Deaths",
+       x = " ",
+       y = " ",
+       caption = paste("Mortality Rate:", sprintf("%.2f", mortality_rate), "%")) +
+  scale_fill_manual(values = c("blue" = "blue", "red" = "red"),
+                    labels = c("Total Cases", "Total Deaths"),
+                    name = "Category") +
+  scale_y_continuous(labels = scales::comma) +
+  theme_minimal() +
+  theme(plot.caption = element_text(size = 12, hjust = 0.5),
+        legend.position = "top")
+```
+
+The bar chart reveals that the number of reported COVID-19 cases is significantly higher than the number of deaths. Using the data, the mortality rate can be calculated as the total number of cases divided by the total number of deaths. Based on this calculation, it is observed that individuals who contract COVID-19 have a 98.58% chance of recovering from the virus. In other words, the mortality rate of COVID-19 appears to be 1.42%.
+This analysis emphasizes the relatively low mortality rate of COVID-19, indicating that the majority of individuals who contract the virus are able to overcome it. However, it is important to recognize that individual health factors, demographics, and healthcare capacity can influence mortality rates, which may vary across different populations and regions.
+
+
+## Conclusion
+
+In conclusion, this analysis of the COVID-19 data obtained from data.gov sheds light on the impact of the pandemic in the United States. Key findings include the significant spike in new cases observed from December 2021 to March 2022, highlighting the urgent need for effective measures to mitigate the spread of the virus. The states hit the hardest by COVID-19, such as California, Texas, and Florida, have experienced a high number of deaths, underscoring the importance of robust public health measures in those regions. Furthermore, the relatively low mortality rate of COVID-19, estimated at 1.42%, indicates that the majority of individuals who contract the virus have a high chance of recovery. These findings emphasize the need for continued vigilance in implementing preventive measures, understanding regional disparities, and allocating resources to protect public health and save lives.
+
+The insights from this report can inform policymakers, public health officials, and the general public in making informed decisions to combat the ongoing COVID-19 pandemic. It is essential to remain proactive in monitoring and responding to changing trends and to prioritize strategies that can effectively reduce the transmission of the virus and minimize its impact on individuals, communities, and healthcare systems.
+
+
+
+
+
+
+
