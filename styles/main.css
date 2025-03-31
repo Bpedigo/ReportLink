@@ -1,0 +1,145 @@
+:root {
+    --primary-color: #2c3e50;
+    --secondary-color: #3498db;
+    --accent-color: #e74c3c;
+    --text-color: #333;
+    --light-bg: #f8f9fa;
+    --dark-bg: #343a40;
+}
+
+/* Base styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    background-color: var(--light-bg);
+    margin: 0;
+    padding: 0;
+}
+
+/* Navigation */
+.navbar {
+    background-color: var(--primary-color);
+    padding: 1rem 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.navbar-brand {
+    color: white !important;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+/* Container */
+.main-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+/* Cards */
+.report-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+    margin-bottom: 1.5rem;
+}
+
+.report-card:hover {
+    transform: translateY(-3px);
+}
+
+/* Tables */
+.table-dark {
+    background-color: var(--dark-bg);
+    color: white;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.table-dark th {
+    background-color: rgba(255,255,255,0.1);
+}
+
+/* Report Content */
+.report-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.report-content h1 {
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+}
+
+.report-content h2 {
+    color: var(--secondary-color);
+    margin: 1.5rem 0 1rem;
+}
+
+/* Footer */
+.footer {
+    background-color: var(--dark-bg);
+    color: white;
+    padding: 2rem 0;
+    margin-top: 3rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .main-container {
+        padding: 0 0.5rem;
+    }
+    
+    .report-content {
+        padding: 1rem;
+    }
+}
+
+/* Utility Classes */
+.text-muted {
+    color: #6c757d !important;
+}
+
+.badge {
+    padding: 0.5em 1em;
+    border-radius: 4px;
+    font-size: 0.85em;
+}
+
+.badge-primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* Charts and Visualizations */
+.chart-container {
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin: 1.5rem 0;
+}
+
+/* Search Box */
+.search-box {
+    padding: 0.5rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 100%;
+    max-width: 300px;
+    margin-bottom: 1rem;
+}
+
+/* Tags */
+.tag {
+    background: var(--secondary-color);
+    color: white;
+    padding: 0.2em 0.6em;
+    border-radius: 3px;
+    font-size: 0.85em;
+    margin-right: 0.5em;
+} 
